@@ -1,10 +1,6 @@
-using Aritix.Extensions;
-
-namespace Aritix.Play.Grid;
-
 using System.Collections.Generic;
 
-
+namespace Aritix.Play.Grid;
 
 public class Grid
 {

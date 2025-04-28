@@ -5,6 +5,9 @@ using Aritix.Scene;
 
 namespace Aritix;
 
+/// <summary>
+/// The Engine class serves as the core of the Aritix framework, managing essential components such as input, scenes, and logging while enabling central configuration for the application.
+/// </summary>
 public class Engine
 {
     private Game ActiveGame;
@@ -15,7 +18,8 @@ public class Engine
     public ContentManager ContentManager;
 
     public ILogger Logger { get; private set; }
-    
+
+
     public Engine(GraphicsDeviceManager graphics, Game game)
     {
         this.Gdm = graphics;
@@ -27,11 +31,25 @@ public class Engine
         Logger = new NullLogger();
     }
 
+
+
+    /// <summary>
+    /// Gets a Rectangle representing the current viewport dimensions.
+    /// </summary>
+    /// <returns>A Rectangle with position (0,0) and dimensions matching the current graphics viewport.</returns>
     public Rectangle GetViewport()
     {
         return new Rectangle(0, 0, Gdm.GraphicsDevice.Viewport.Width, Gdm.GraphicsDevice.Viewport.Height);
     }
 
+    
+    /// <summary>
+    /// Creates a new texture with the specified dimensions filled with a solid color.
+    /// </summary>
+    /// <param name="width">The width of the texture in pixels.</param>
+    /// <param name="height">The height of the texture in pixels.</param>
+    /// <param name="color">The color to fill the texture with.</param>
+    /// <returns>A new Texture2D instance filled with the specified color.</returns>
     public Texture2D CreateTexture(int width, int height, Color color)
     {
         var texture = new Texture2D(Gdm.GraphicsDevice, width, height);
@@ -81,6 +99,11 @@ public class Engine
         this.InputManager.Update(gameTime);
         this.SceneManager.Update(gameTime);
 
+    }
+
+    public void Quit()
+    {
+        this.ActiveGame.Exit();
     }
 
     public void Draw(GameTime gameTime, SpriteBatch spriteBatch)

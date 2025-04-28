@@ -18,6 +18,14 @@ public static partial class Sdl
     [LibraryImport(SDL_Library, StringMarshalling = StringMarshalling.Utf8)]
     private static partial int SDL_GetPowerInfo(out int secs, out int pct);
 
+    [LibraryImport(SDL_Library, StringMarshalling = StringMarshalling.Utf8)]
+    private static partial void SDL_SetWindowMinimumSize(IntPtr window, int minW, int minH);
+
+    public static void SetWindowMinimumSize(IntPtr window, int minW, int minH)
+    {
+        SDL_SetWindowMinimumSize(window, minW, minH);
+    }
+
     public static SdlPowerInfo GetPowerInfo()
     {
         int state = SDL_GetPowerInfo(out int secs, out int pct);
@@ -28,6 +36,7 @@ public static partial class Sdl
             State = (SdlPowerState)state
         };
     }
+
 
     [LibraryImport(SDL_Library, StringMarshalling = StringMarshalling.Utf8)]
     private static partial IntPtr SDL_GetPrefPath(string org, string app);
@@ -49,7 +58,7 @@ public static partial class Sdl
             {
                 return NativeLibrary.Load(SDL_Library_Linux, assembly, searchPath);
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 return NativeLibrary.Load(SDL_Library_W64, assembly, searchPath);
             }

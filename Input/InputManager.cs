@@ -20,6 +20,7 @@ public class InputManager
     private GamePadState _currentVirtualGamePadState;
     
     private TouchCollection _currentTouches;
+    private TouchCollection _previousTouches;
 
     GamepadTypes _gamepadType = GamepadTypes.None;
 
@@ -44,7 +45,8 @@ public class InputManager
 
         _currentMouseState = Mouse.GetState();
         _previousMouseState = _currentMouseState;
-        
+
+        _previousTouches = _currentTouches;
         _currentTouches = TouchPanel.GetState();
     }
     
@@ -117,13 +119,14 @@ public class InputManager
             var capabilities = GamePad.GetCapabilities(PlayerIndex.One);
             var name = capabilities.DisplayName;
 
-            _gamepadType = name.Contains("PS") ? GamepadTypes.DualShock : GamepadTypes.Xbox;
-            _gamepadType = name.Contains("Nintendo") ? GamepadTypes.Nintendo : _gamepadType;
+            // _gamepadType = name.Contains("PS") ? GamepadTypes.DualShock : GamepadTypes.Xbox;
+            // _gamepadType = name.Contains("Nintendo") ? GamepadTypes.Nintendo : _gamepadType;
         }
         else
         {
             _gamepadType = GamepadTypes.None;
         }
+
     }
     
     public void MapDefaultDirections()
@@ -164,6 +167,9 @@ public class InputManager
         AddDigitalMap("Back", Keys.Back);
         AddDigitalMap("Back", Keys.Escape);
         AddDigitalMap("Back", Buttons.Back);
+        AddDigitalMap("Back", Buttons.Start);
+        AddDigitalMap("Back",Buttons.RightShoulder);
+        AddDigitalMap("Back",Buttons.RightTrigger);
     }
     
     public void MapDefaultJump()
@@ -274,6 +280,8 @@ public class InputManager
         return pressed;
     }
 
+
+
     public Vector2 MouseScale(Vector2 worldSize, Vector2 screenSize)
     {
         var position = new Vector2();
@@ -309,6 +317,10 @@ public class InputManager
 
     public bool Pressed(MouseButtons button)
     {
+        if (button == MouseButtons.Left)
+        {
+            if (_previousTouches.Count == 0 && _currentTouches.Count > 0) return true;
+        }
         return Down(button) && !InternalMosueButtonState(button, _previousMouseState);
     }
 

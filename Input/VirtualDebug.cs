@@ -16,20 +16,19 @@ public class VirtualDebug
     private long _lastDrawCount = 0;
     private long _lastSpriteCount = 0;
 
-    
+    private Texture2D _texture;
 
     private string _fps = "FPS: 0";
 
-    public VirtualDebug(GraphicsDeviceManager graphicsDevice, SpriteFont sf)
+    public VirtualDebug(GraphicsDeviceManager graphicsDevice, SpriteFont sf, Texture2D texture)
     {
+        _texture = texture;
         _graphicsDevice = graphicsDevice;
         _font = sf;
     }
 
     public void Update(GameTime gameTime)
     {
-        
-        
         _ticks++;
         _elapsed += gameTime.ElapsedGameTime.TotalSeconds;
         if (_elapsed > _frequency)
@@ -55,6 +54,7 @@ public class VirtualDebug
         _lastSpriteCount = _graphicsDevice.GraphicsDevice.Metrics.SpriteCount;
         
         spriteBatch.Begin();
+        spriteBatch.Draw(_texture, new Vector2(0,0), Color.White);
         spriteBatch.DrawString(_font, _fps, new Vector2(0, 0), Color.White);
         spriteBatch.End();
     }
