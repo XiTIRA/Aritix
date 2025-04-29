@@ -1,1 +1,0 @@
-Home of the docs page
