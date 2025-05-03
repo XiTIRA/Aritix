@@ -1,8 +1,7 @@
-using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace Xitira.Aritix.Extensions;
+namespace Xitira.Aritix.Sdl;
 
 public static partial class Sdl
 {

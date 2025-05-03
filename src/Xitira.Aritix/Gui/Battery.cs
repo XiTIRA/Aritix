@@ -1,6 +1,7 @@
-using Xitira.Aritix.Extensions;
+using Xitira.Aritix.Annex;
+using Xitira.Aritix.Systems.Battery;
 
-namespace Xitira.Aritix.System;
+namespace Xitira.Aritix.Gui;
 
 public class Battery
 {
@@ -19,7 +20,9 @@ public class Battery
     bool isCharging = false;
     private float percent = 0;
 
-    public Battery(Texture2D full, Texture2D empty, Texture2D half, Texture2D charging, Vector2 position, double updateSeconds)
+    IBatterySystem _batterySystem;
+    
+    public Battery(IBatterySystem batterySystem, Texture2D full, Texture2D empty, Texture2D half, Texture2D charging, Vector2 position, double updateSeconds)
     {
         Full = full;
         Empty = empty;
@@ -30,6 +33,8 @@ public class Battery
         Position = position;
         Origin = new Vector2(Charging.Width / 2, Charging.Height / 2);
 
+        
+        _batterySystem = batterySystem;
         Update();
     }
 
@@ -37,7 +42,7 @@ public class Battery
     {
         _elapsed = 0;
 
-        var status = global::Xitira.Aritix.Extensions.Sdl.GetPowerInfo();
+        var status = _batterySystem.GetBatteryInfo();
         // var status = new SdlPowerInfo()
         // {
         //     Percent = -1,
@@ -45,12 +50,12 @@ public class Battery
         //     State = SdlPowerState.NoBattery
         // };
 
-        isCharging = status.State == SdlPowerState.Charging || status.State == SdlPowerState.NoBattery;
+        isCharging = status.State == BatteryStates.Charging || status.State == BatteryStates.NoBattery;
         percent = status.Percent;
 
         if (isCharging) CurrentTexture = Charging;
         else if (percent > .8) CurrentTexture = Full;
-        else if (percent < .3) CurrentTexture = Half;
+        else if (percent > .3) CurrentTexture = Half;
         else CurrentTexture = Empty;
     }
 

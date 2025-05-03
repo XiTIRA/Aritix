@@ -1,7 +1,8 @@
 using System;
+using Xitira.Aritix.Annex;
 using Xitira.Aritix.Input;
-using Xitira.Aritix.Log;
 using Xitira.Aritix.Scene;
+using Xitira.Aritix.Systems.Log;
 
 namespace Xitira.Aritix;
 
@@ -17,7 +18,7 @@ public class Engine
     public SceneManager SceneManager;
     public ContentManager ContentManager;
 
-    public ILogger Logger { get; private set; }
+    public ILogSystem Logger { get; private set; }
 
 
     public Engine(GraphicsDeviceManager graphics, Game game)
@@ -28,7 +29,7 @@ public class Engine
         InputManager = new InputManager();
         SceneManager = new SceneManager(Gdm, ActiveGame.Services);
         
-        Logger = new NullLogger();
+        Logger = new NullLogSystem();
     }
 
 
@@ -59,7 +60,7 @@ public class Engine
         return texture;
     }
 
-    public void SetLogger(ILogger logger)
+    public void SetLogger(ILogSystem logger)
     {
         Logger = logger;
     }
