@@ -280,14 +280,7 @@ public class InputManager
 
 
 
-    public Vector2 MouseScale(Vector2 worldSize, Vector2 screenSize)
-    {
-        var position = new Vector2();
-        var mouse = _currentMouseState.Position.ToVector2();
-        position.X = mouse.X.MapClamp(0, screenSize.X,0,worldSize.X);
-        position.Y = mouse.Y.MapClamp(0, screenSize.Y,0,worldSize.Y);
-        return position;
-    }
+
 
     public Vector2 Axes(AxisTypes axis)
     {

@@ -1,5 +1,7 @@
 using System;
+using MonoGame.Framework.Utilities;
 using Xitira.Aritix.Annex;
+using Xitira.Aritix.Extensions;
 using Xitira.Aritix.Input;
 using Xitira.Aritix.Scene;
 using Xitira.Aritix.Systems.Log;
@@ -17,19 +19,41 @@ public class Engine
     public InputManager InputManager;
     public SceneManager SceneManager;
     public ContentManager ContentManager;
+    
+    public bool IsResizing = false;
+    public Rectangle RenderDestination;
+    public Rectangle RenderNative;
+    public RenderTarget2D RenderTarget;
 
     public ILogSystem Logger { get; private set; }
 
 
-    public Engine(GraphicsDeviceManager graphics, Game game)
+    public Engine(GraphicsDeviceManager graphics, Game game, Point nativeSize, int initialScale)
     {
-        this.Gdm = graphics;
-        this.ActiveGame = game;
+        Gdm = graphics;
+        ActiveGame = game;
         
         InputManager = new InputManager();
         SceneManager = new SceneManager(Gdm, ActiveGame.Services);
-        
         Logger = new NullLogSystem();
+        
+        if (PlatformInfo.MonoGamePlatform == MonoGamePlatform.Android)
+        {
+            Gdm.IsFullScreen = true;
+        } else
+        {
+            Gdm.PreferredBackBufferWidth = nativeSize.X * initialScale;
+            Gdm.PreferredBackBufferHeight = nativeSize.Y * initialScale;
+            Gdm.ApplyChanges();
+        }
+        
+        ActiveGame.Window.ClientSizeChanged += WindowRezise; 
+        
+        RenderNative = new Rectangle(0, 0, nativeSize.X, nativeSize.Y);
+        RenderTarget = new RenderTarget2D(Gdm.GraphicsDevice, nativeSize.X, nativeSize.Y);
+        
+        Gdm.ApplyChanges();
+        CalculateRenderDestination();
     }
 
 
@@ -63,6 +87,14 @@ public class Engine
     public void SetLogger(ILogSystem logger)
     {
         Logger = logger;
+    }
+
+    public Vector2 ScaleWorldPoint(Vector2 input)
+    {
+        var position = new Vector2();
+        position.X = input.X.MapClamp(0, RenderDestination.Width,0,RenderNative.Width);
+        position.Y = input.Y.MapClamp(0, RenderDestination.Height,0,RenderNative.Height);
+        return position;
     }
 
     public void SetFps(int fps)
@@ -100,6 +132,27 @@ public class Engine
         this.InputManager.Update(gameTime);
         this.SceneManager.Update(gameTime);
 
+    }
+    
+    public void WindowRezise(object? sender, EventArgs args) 
+    {
+        if (!IsResizing && ActiveGame.Window.ClientBounds is { Width: > 0, Height: > 0 })
+        {
+            IsResizing = true;
+            CalculateRenderDestination();
+            IsResizing = false;
+        }
+    }
+
+    public void AllowWindowResize()
+    {
+        ActiveGame.Window.AllowUserResizing = true;
+    }
+    
+    private void CalculateRenderDestination()
+    {
+        Point size = ActiveGame.GraphicsDevice.Viewport.Bounds.Size;
+        RenderDestination = new Rectangle(0, 0, size.X, size.Y);
     }
 
     public void Quit()
